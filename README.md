@@ -69,7 +69,7 @@ Contributions are what make the open source community such an amazing place to l
 
 ## Contact
 
-Your Name - [rockstaralansaji@gmail.com](mailto:your-email@example.com)
+Alan Saji- [rockstaralansaji@gmail.com](mailto:your-email@example.com)
 
 
 check out live site at https://expense-tracker-alan-saji.vercel.app/
