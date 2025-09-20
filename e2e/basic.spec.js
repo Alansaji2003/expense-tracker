@@ -5,7 +5,7 @@ test.describe('Basic App Functionality', () => {
     await page.goto('/')
     
     // Check if the page loads without errors
-    await expect(page).toHaveTitle(/Expense Tracker/)
+    await expect(page).toHaveTitle(/Expenses Tracker/)
     
     // Check for basic elements that should be present
     await expect(page.locator('body')).toBeVisible()
@@ -19,15 +19,16 @@ test.describe('Basic App Functionality', () => {
     await expect(page.locator('body')).toBeVisible()
   })
 
-  test('should load static assets', async ({ page }) => {
+  test('should load without JavaScript errors', async ({ page }) => {
+    const errors = []
+    page.on('pageerror', error => errors.push(error))
+    
     await page.goto('/')
     
-    // Check if CSS is loaded (page should have some styling)
-    const bodyStyles = await page.locator('body').evaluate(el => {
-      return window.getComputedStyle(el).margin
-    })
+    // Wait a bit for any async operations
+    await page.waitForTimeout(2000)
     
-    // If CSS is loaded, margin should not be the browser default
-    expect(bodyStyles).toBeDefined()
+    // Should not have any JavaScript errors
+    expect(errors).toHaveLength(0)
   })
 })
