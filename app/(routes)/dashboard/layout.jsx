@@ -43,6 +43,27 @@ function Dashlayout({children}) {
       console.error('Error checking user budgets:', error);
     }
   }
+
+  // Show loading state while authentication is being checked
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  // If no user after loading, the useEffect will redirect to sign-in
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-gray-600">Redirecting to sign in...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
     <div className='fixed md:w-64 hidden md:block'>
