@@ -62,7 +62,7 @@ function SideNav() {
     const path = usePathname();
     
     useEffect(() => {
-        console.log(path);
+        // console.log(path); // Removed for cleaner test output
     }, [path]);
 
     return (

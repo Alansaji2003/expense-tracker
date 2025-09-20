@@ -1,8 +1,16 @@
-import { GET, POST } from '../../app/api/transactions/route'
-import { db } from '../../utils/dbConfig'
+// Set up environment variables before importing modules
+process.env.NEXT_PUBLIC_DATABASE_URL = 'postgresql://test:test@localhost:5432/test'
 
-// Mock dependencies
-jest.mock('../../utils/dbConfig')
+import { GET, POST } from '../../app/api/transactions/route'
+
+// Mock the entire dbConfig module
+jest.mock('../../utils/dbConfig', () => ({
+  db: {
+    select: jest.fn(),
+    insert: jest.fn()
+  }
+}))
+
 jest.mock('../../utils/recurringUtils', () => ({
   calculateNextDueDate: jest.fn(() => new Date('2024-02-15'))
 }))
@@ -18,6 +26,8 @@ jest.mock('next/server', () => ({
 }))
 
 describe('/api/transactions', () => {
+  const { db } = require('../../utils/dbConfig')
+  
   afterEach(() => {
     jest.clearAllMocks()
   })

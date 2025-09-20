@@ -16,9 +16,30 @@ jest.mock('next/link', () => {
   }
 })
 
+// Mock Clerk components and hooks
+jest.mock('@clerk/nextjs', () => ({
+  useUser: jest.fn(),
+  UserButton: () => <div>User Button</div>
+}))
+
+// Mock usePathname
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn()
+}))
+
 describe('SideNav Component', () => {
+  const { useUser } = require('@clerk/nextjs')
+  
   beforeEach(() => {
     usePathname.mockReturnValue('/dashboard')
+    // Default mock user
+    useUser.mockReturnValue({
+      user: {
+        primaryEmailAddress: {
+          emailAddress: 'test@example.com'
+        }
+      }
+    })
   })
 
   afterEach(() => {
@@ -72,15 +93,13 @@ describe('SideNav Component', () => {
 
   it('shows reminders menu for admin users', () => {
     // Mock admin user
-    const mockUser = {
-      primaryEmailAddress: {
-        emailAddress: 'mailalantest@gmail.com'
+    useUser.mockReturnValue({
+      user: {
+        primaryEmailAddress: {
+          emailAddress: 'mailalantest@gmail.com'
+        }
       }
-    }
-    
-    // Mock useUser for this test
-    const { useUser } = require('@clerk/nextjs')
-    useUser.mockReturnValue({ user: mockUser })
+    })
     
     render(<SideNav />)
 
@@ -89,15 +108,13 @@ describe('SideNav Component', () => {
 
   it('hides reminders menu for non-admin users', () => {
     // Mock non-admin user
-    const mockUser = {
-      primaryEmailAddress: {
-        emailAddress: 'regular@example.com'
+    useUser.mockReturnValue({
+      user: {
+        primaryEmailAddress: {
+          emailAddress: 'regular@example.com'
+        }
       }
-    }
-    
-    // Mock useUser for this test
-    const { useUser } = require('@clerk/nextjs')
-    useUser.mockReturnValue({ user: mockUser })
+    })
     
     render(<SideNav />)
 

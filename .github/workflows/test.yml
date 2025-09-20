@@ -25,11 +25,14 @@ jobs:
     - name: Run unit tests
       run: npm run test:coverage
       env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        EMAIL_USER: ${{ secrets.EMAIL_USER }}
-        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-        ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+        CI: true
+        NODE_ENV: test
+        AI_PROVIDER: mock
+        DATABASE_URL: postgresql://test:test@localhost:5432/test
+        OPENAI_API_KEY: test-openai-key
+        EMAIL_USER: test@test.com
+        EMAIL_PASS: testpass
+        ADMIN_EMAILS: admin@test.com
 
     - name: Upload coverage reports
       uses: codecov/codecov-action@v3

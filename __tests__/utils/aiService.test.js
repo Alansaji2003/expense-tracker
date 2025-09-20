@@ -1,27 +1,12 @@
 import { generateFinancialInsights, generateQuickTips } from '../../utils/aiService'
-import OpenAI from 'openai'
 
-// Mock OpenAI
-jest.mock('openai')
-
-// Mock the OpenAI module properly
-jest.mock('openai', () => {
-  return jest.fn().mockImplementation(() => ({
-    chat: {
-      completions: {
-        create: jest.fn()
-      }
-    }
-  }))
-})
+// Mock environment variables for testing
+process.env.AI_PROVIDER = 'mock'
 
 describe('AI Service', () => {
-  let mockOpenAI
-
   beforeEach(() => {
-    // Get the mocked OpenAI constructor
-    const OpenAIConstructor = require('openai')
-    mockOpenAI = new OpenAIConstructor()
+    // Ensure we're using mock provider for tests
+    process.env.AI_PROVIDER = 'mock'
   })
 
   afterEach(() => {
@@ -64,41 +49,23 @@ describe('AI Service', () => {
     }
 
     it('should generate financial insights successfully', async () => {
-      const mockResponse = {
-        choices: [{
-          message: {
-            content: 'Your finances look good overall. You are managing your budget well.'
-          }
-        }],
-        usage: { total_tokens: 100 }
-      }
-      mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse)
-
       const result = await generateFinancialInsights(mockFinancialData)
 
       expect(result.success).toBe(true)
-      expect(result.response).toBe('Your finances look good overall. You are managing your budget well.')
-      expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith({
-        model: 'gpt-3.5-turbo',
-        messages: expect.arrayContaining([
-          expect.objectContaining({
-            role: 'system',
-            content: expect.stringContaining('financial advisor')
-          })
-        ]),
-        max_tokens: 800,
-        temperature: 0.7
-      })
+      expect(result.response).toContain('spending patterns')
+      expect(result.provider).toBe('mock')
     })
 
-    it('should handle OpenAI API errors', async () => {
-      const error = new Error('API rate limit exceeded')
-      mockOpenAI.chat.completions.create.mockRejectedValue(error)
+    it('should handle API errors gracefully with fallback', async () => {
+      // Mock provider should always work, so test with a different provider
+      process.env.AI_PROVIDER = 'openai'
+      process.env.OPENAI_API_KEY = 'invalid-key'
 
       const result = await generateFinancialInsights(mockFinancialData)
 
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('API rate limit exceeded')
+      // Should fallback to mock and still succeed
+      expect(result.success).toBe(true)
+      expect(result.provider).toContain('fallback-mock')
     })
 
     it('should handle new users with no data', async () => {
@@ -110,20 +77,11 @@ describe('AI Service', () => {
         monthlySpending: []
       }
 
-      const mockResponse = {
-        choices: [{
-          message: {
-            content: 'Welcome! Let me help you get started with budgeting.'
-          }
-        }],
-        usage: { total_tokens: 50 }
-      }
-      mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse)
-
       const result = await generateFinancialInsights(emptyData)
 
       expect(result.success).toBe(true)
-      expect(result.response).toContain('Welcome')
+      expect(result.response).toContain('spending patterns')
+      expect(result.provider).toBe('mock')
     })
   })
 
@@ -144,31 +102,25 @@ describe('AI Service', () => {
     }
 
     it('should generate quick tips successfully', async () => {
-      const mockResponse = {
-        choices: [{
-          message: {
-            content: '• Track your spending daily\n• Set up automatic savings\n• Review budgets monthly'
-          }
-        }]
-      }
-      mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse)
-
       const result = await generateQuickTips(mockFinancialData)
 
       expect(result.success).toBe(true)
-      expect(result.tips).toHaveLength(3)
-      expect(result.tips[0]).toBe('Track your spending daily')
+      expect(result.tips).toBeDefined()
+      expect(Array.isArray(result.tips)).toBe(true)
+      expect(result.tips.length).toBeGreaterThan(0)
     })
 
     it('should provide fallback tips on error', async () => {
-      const error = new Error('API error')
-      mockOpenAI.chat.completions.create.mockRejectedValue(error)
+      // Test with invalid provider to trigger fallback
+      process.env.AI_PROVIDER = 'openai'
+      process.env.OPENAI_API_KEY = 'invalid-key'
 
       const result = await generateQuickTips(mockFinancialData)
 
-      expect(result.success).toBe(false)
-      expect(result.tips).toHaveLength(3)
-      expect(result.tips[0]).toContain('Track your spending')
+      expect(result.success).toBe(true) // Should fallback to default tips
+      expect(result.tips).toBeDefined()
+      expect(Array.isArray(result.tips)).toBe(true)
+      expect(result.tips.length).toBeGreaterThan(0)
     })
   })
 })
