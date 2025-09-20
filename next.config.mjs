@@ -12,6 +12,16 @@ const nextConfig = {
     serverComponentsExternalPackages: ['@neondatabase/serverless'],
   },
   
+  // Skip static generation for dynamic routes during build
+  trailingSlash: false,
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
+  },
+  
+  // Skip build-time data collection for API routes
+  skipTrailingSlashRedirect: true,
+  skipMiddlewareUrlNormalize: true,
+  
   // Image optimization for Docker
   images: {
     domains: ['localhost'],

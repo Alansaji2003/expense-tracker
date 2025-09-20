@@ -1,10 +1,28 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/utils/dbConfig';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
+    // Check if we're in build time - if so, return early
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL && !process.env.NEXT_PUBLIC_DATABASE_URL) {
+      return NextResponse.json({ 
+        status: 'build-time',
+        message: 'Health check not available during static generation',
+        timestamp: new Date().toISOString(),
+      }, { status: 503 });
+    }
+
     // Check database connection
-    const dbCheck = await db.execute('SELECT 1 as health');
+    let dbCheck;
+    try {
+      dbCheck = db ? await db.execute('SELECT 1 as health') : null;
+    } catch (dbError) {
+      console.warn('Database health check failed:', dbError.message);
+      dbCheck = null;
+    }
     
     // Check environment variables
     const requiredEnvVars = [

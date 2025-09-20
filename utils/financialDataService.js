@@ -7,6 +7,11 @@ import { eq, desc, sql, and, gte } from 'drizzle-orm';
  */
 export const getUserFinancialData = async (userEmail) => {
   try {
+    // Check if database is available (for build-time safety)
+    if (!db) {
+      throw new Error('Database connection not available');
+    }
+
     // Get budgets with spending data
     const budgetsData = await db
       .select({

@@ -3,6 +3,9 @@ import { db } from '@/utils/dbConfig';
 import { Budgets } from '@/utils/schema';
 import { eq } from 'drizzle-orm';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // GET - Check if user has any budgets
 export async function GET(req) {
   try {

@@ -3,6 +3,9 @@ import { db } from '@/utils/dbConfig';
 import { Budgets, Transactions } from '@/utils/schema';
 import { eq, getTableColumns, sql } from 'drizzle-orm';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // GET - Fetch all budgets for a user
 export async function GET(req) {
   try {

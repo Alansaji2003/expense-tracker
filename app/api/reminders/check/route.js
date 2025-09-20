@@ -5,6 +5,9 @@ import { eq, and, lte, or, isNull } from 'drizzle-orm';
 import { sendRecurringTransactionReminder } from '@/utils/emailService';
 import { isToday } from '@/utils/recurringUtils';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // GET - Check for due reminders and send emails
 export async function GET(req) {
   try {

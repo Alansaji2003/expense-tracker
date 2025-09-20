@@ -2,8 +2,19 @@ import { NextResponse } from 'next/server';
 import { getUserFinancialData } from '@/utils/financialDataService';
 import { generateFinancialInsights } from '@/utils/aiService';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 export async function POST(req) {
   try {
+    // Check if we're in build time - if so, return early
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL && !process.env.NEXT_PUBLIC_DATABASE_URL) {
+      return NextResponse.json({ 
+        error: 'Service unavailable during build time',
+        message: 'This endpoint is not available during static generation'
+      }, { status: 503 });
+    }
+
     const { userEmail, question } = await req.json();
 
     if (!userEmail) {

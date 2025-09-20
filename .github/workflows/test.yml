@@ -29,6 +29,7 @@ jobs:
         NODE_ENV: test
         AI_PROVIDER: mock
         DATABASE_URL: postgresql://test:test@localhost:5432/test
+        NEXT_PUBLIC_DATABASE_URL: postgresql://test:test@localhost:5432/test
         OPENAI_API_KEY: test-openai-key
         EMAIL_USER: test@test.com
         EMAIL_PASS: testpass
@@ -61,13 +62,16 @@ jobs:
       run: npm run build
       env:
         CI: true
-        NODE_ENV: test
+        NODE_ENV: production
         AI_PROVIDER: mock
         DATABASE_URL: postgresql://test:test@localhost:5432/test
+        NEXT_PUBLIC_DATABASE_URL: postgresql://test:test@localhost:5432/test
         OPENAI_API_KEY: test-openai-key
         EMAIL_USER: test@test.com
         EMAIL_PASS: testpass
         ADMIN_EMAILS: admin@test.com
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_test
+        CLERK_SECRET_KEY: sk_test_test
 
     - name: Run E2E tests
       run: npx playwright test e2e/basic.spec.js
@@ -76,6 +80,7 @@ jobs:
         NODE_ENV: production
         AI_PROVIDER: mock
         DATABASE_URL: postgresql://test:test@localhost:5432/test
+        NEXT_PUBLIC_DATABASE_URL: postgresql://test:test@localhost:5432/test
         OPENAI_API_KEY: test-openai-key
         EMAIL_USER: test@test.com
         EMAIL_PASS: testpass

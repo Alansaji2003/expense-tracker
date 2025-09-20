@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // This endpoint should be called by a cron job service (like Vercel Cron, GitHub Actions, or external cron service)
 export async function GET(req) {
   try {
