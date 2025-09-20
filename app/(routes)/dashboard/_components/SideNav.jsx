@@ -7,7 +7,15 @@ import { usePathname } from 'next/navigation';
 import  Link  from 'next/link';
 
 function SideNav() {
-    const { user } = useUser();
+    let user = null;
+    
+    try {
+        const userHook = useUser();
+        user = userHook.user;
+    } catch (error) {
+        // Clerk not available (build time or missing keys)
+        console.warn('Clerk not available in SideNav:', error.message);
+    }
     
     // Check if user is admin
     const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || ['mailalantest@gmail.com'];
@@ -83,8 +91,16 @@ function SideNav() {
                 ))}
             </div>
             <div className='fixed bottom-10 p-5 flex gap-2 items-center'>
-                <UserButton />
-                Profile
+                {user ? (
+                    <>
+                        <UserButton />
+                        Profile
+                    </>
+                ) : (
+                    <div className='w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center'>
+                        <span className='text-sm'>U</span>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -6,7 +6,19 @@ import { useUser } from '@clerk/nextjs';
 import {useRouter} from 'next/navigation';
 
 function Dashlayout({children}) {
-  const {user} = useUser();
+  let user = null;
+  let isLoaded = false;
+  
+  try {
+    const userHook = useUser();
+    user = userHook.user;
+    isLoaded = userHook.isLoaded;
+  } catch (error) {
+    // Clerk not available (build time or missing keys)
+    console.warn('Clerk not available:', error.message);
+    isLoaded = true; // Assume loaded to prevent infinite loading
+  }
+  
   const router = useRouter();
   
   useEffect(() =>{
