@@ -5,7 +5,6 @@ import { Edit } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogFooter,
   DialogClose,
@@ -15,16 +14,15 @@ import {
 import EmojiPicker from 'emoji-picker-react';
 import { Input } from "@/components/ui/input";
 import { useUser } from '@clerk/nextjs';
-import { db } from '@/utils/dbConfig';
-import { Budgets } from '@/utils/schema';
-import { eq } from 'drizzle-orm';
 import { toast } from '@/components/ui/use-toast';
 
-function EditBudget({ budgetInfo , refeshData}) {
+function EditBudget({ budgetInfo, refreshData }) {
     const [emoji, setEmoji] = useState("😄");
     const [openPicker, setOpenPicker] = useState(false);
     const [name, setName] = useState("");
     const [amount, setAmount] = useState("");
+    const [category, setCategory] = useState("");
+    const [loading, setLoading] = useState(false);
     const { user } = useUser();
 
     useEffect(() => {
@@ -32,24 +30,50 @@ function EditBudget({ budgetInfo , refeshData}) {
             setEmoji(budgetInfo.icon || "😄");
             setName(budgetInfo.name || "");
             setAmount(budgetInfo.amount || "");
+            setCategory(budgetInfo.category || "");
         }
     }, [budgetInfo]);
 
     const onUpdateBudget = async () => {
-        // Update budget logic here
-        const result = await db.update(Budgets).set({
-            name: name,
-            amount:amount,
-            icon:emoji,
-            
-        }).where(eq(Budgets.id, budgetInfo.id)).returning();
+        try {
+            setLoading(true);
+            const response = await fetch(`/api/budgets/${budgetInfo.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name,
+                    amount: Number(amount),
+                    icon: emoji,
+                    category
+                }),
+            });
 
-        if(result){
+            const data = await response.json();
+
+            if (response.ok) {
+                toast({
+                    title: "Budget Updated",
+                    description: "Success!",
+                });
+                refreshData();
+            } else {
+                toast({
+                    title: "Error",
+                    description: data.error || "Failed to update budget",
+                    variant: "destructive",
+                });
+            }
+        } catch (error) {
+            console.error('Error updating budget:', error);
             toast({
-                title: "Budget Update",
-                description: "Success!",
-            })
-            refeshData();
+                title: "Error",
+                description: "Failed to update budget",
+                variant: "destructive",
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -70,19 +94,28 @@ function EditBudget({ budgetInfo , refeshData}) {
                                 </div>
                             )}
                         </div>
+
                         <div className='mt-2'>
                             <h2 className='text-black bold'>Budget Name</h2>
-                            <Input value={name} onChange={(e) => { setName(e.target.value); }} placeholder="eg. Groceries" />
+                            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="eg. Groceries" />
                         </div>
+
                         <div className='mt-2'>
                             <h2 className='text-black bold'>Amount</h2>
-                            <Input value={amount} type="number" onChange={(e) => { setAmount(e.target.value); }} placeholder="eg. 3000" />
+                            <Input value={amount} type="number" onChange={(e) => setAmount(e.target.value)} placeholder="eg. 3000" />
                         </div>
-                        <DialogDescription />
+
+                        <div className='mt-2'>
+                            <h2 className='text-black bold'>Category</h2>
+                            <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="eg. Food, Education" />
+                        </div>
                     </DialogHeader>
+
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button onClick={() => onUpdateBudget()} disabled={!(name && amount)} className="mt-5">Update Budget</Button>
+                            <Button onClick={onUpdateBudget} disabled={!(name && amount) || loading} className="mt-5">
+                                {loading ? "Updating..." : "Update Budget"}
+                            </Button>
                         </DialogClose>
                     </DialogFooter>
                 </DialogContent>

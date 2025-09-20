@@ -1,12 +1,20 @@
 "use client";
 import React, { useEffect } from 'react';
 import Image from 'next/image';
-import { UserButton } from '@clerk/nextjs';
-import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck } from 'lucide-react';
+import { UserButton, useUser } from '@clerk/nextjs';
+import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck, Bell, Bot } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import  Link  from 'next/link';
+
 function SideNav() {
-    const menuList= [
+    const { user } = useUser();
+    
+    // Check if user is admin
+    const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || ['mailalantest@gmail.com'];
+    const isAdmin = user?.primaryEmailAddress?.emailAddress && 
+                    adminEmails.includes(user.primaryEmailAddress.emailAddress);
+
+    const baseMenuList = [
         {
             key: 1,
             name: 'Dashboard',
@@ -27,11 +35,29 @@ function SideNav() {
         },
         {
             key: 4,
+            name: 'AI Advisor',
+            icon: Bot,
+            path: '/dashboard/ai-advisor'
+        },
+        {
+            key: 6,
             name: 'Buy me a Coffee',
             icon: ShieldCheck,
             path: '/dashboard/upgrade'
         }
     ];
+
+    // Add Reminders menu item only for admins
+    const menuList = isAdmin ? [
+        ...baseMenuList.slice(0, 4), // Dashboard, Budgets, Transactions, AI Advisor
+        {
+            key: 5,
+            name: 'Reminders',
+            icon: Bell,
+            path: '/dashboard/reminders'
+        },
+        ...baseMenuList.slice(4) // Buy me a Coffee
+    ] : baseMenuList;
 
     const path = usePathname();
     

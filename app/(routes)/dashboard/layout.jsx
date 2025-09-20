@@ -3,24 +3,26 @@ import React, { useEffect } from 'react'
 import SideNav from './_components/SideNav'
 import DashboardHeader from './_components/DashboardHeader'
 import { useUser } from '@clerk/nextjs';
-import { db } from '../../../utils/dbConfig';
-import { Budgets } from '@/utils/schema';
-import { eq } from 'drizzle-orm';
 import {useRouter} from 'next/navigation';
-function Dashlayout({children}) {
 
+function Dashlayout({children}) {
   const {user} = useUser();
   const router = useRouter();
+  
   useEffect(() =>{
-    user&&checkUserBudgets();
+    user && checkUserBudgets();
   },[user])
 
   const checkUserBudgets = async () =>{ 
-    const result = await db.select().from(Budgets)
-    .where(eq(Budgets.createdBy,user?.primaryEmailAddress?.emailAddress))
-    // console.log(result);
-    if(result?.length == 0){
-      router.replace('/dashboard/budgets')
+    try {
+      const response = await fetch(`/api/user/budgets/check?email=${user?.primaryEmailAddress?.emailAddress}`);
+      const data = await response.json();
+      
+      if (!data.hasBudgets) {
+        router.replace('/dashboard/budgets');
+      }
+    } catch (error) {
+      console.error('Error checking user budgets:', error);
     }
   }
   return (

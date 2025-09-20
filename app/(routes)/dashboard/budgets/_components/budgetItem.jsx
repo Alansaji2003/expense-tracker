@@ -1,8 +1,8 @@
-import Link from 'next/link'
-import React from 'react'
+import Link from 'next/link';
+import React from 'react';
 
-function budgetItem({ budget }) {
-  // Get progress 
+function BudgetItem({ budget, showCategory = false }) {
+  // Calculate spending progress
   const calculateProgress = () => {
     const perc = (budget.totalSpend / budget.amount) * 100;
     return Math.min(100, Math.max(0, perc.toFixed(2)));
@@ -17,18 +17,28 @@ function budgetItem({ budget }) {
               {budget?.icon}
             </h2>
             <div>
-              <h2 className='font-bold '>
-                {budget?.name}
-              </h2>
-              <h2 className='text-sm text-gray-500'>
-                {budget?.totalItem} Item
-              </h2>
+              <h5 className='font-bold '>{budget?.name}</h5>
+
+              {/* Show category if enabled */}
+              {showCategory && budget?.category && (
+                <h5 className='text-xs text-green-600'>
+                  Category: {budget?.category}
+                </h5>
+              )}
+
+              <h5 className='text-xs text-gray-500'>
+                {budget?.totalItem} Items
+              </h5>
+              <h5 className='text-xs text-blue-500'>
+                Recurring: ₹{budget?.recurringTotal || 0}
+              </h5>
             </div>
           </div>
-          <h2 className='font-bold text-primary text-lg'>
+          <h5 className='font-bold text-primary text-xs'>
             ₹{budget?.amount}
-          </h2>
+          </h5>
         </div>
+
         <div className='mt-5'>
           <div className='flex items-center justify-between'>
             <h2 className='text-xs text-slate-400'>
@@ -41,8 +51,7 @@ function budgetItem({ budget }) {
             </h2>
           </div>
           <div className='w-full bg-slate-300 h-2 rounded-full'>
-            <div className='bg-primary h-2 rounded-full' style={{ width: `${calculateProgress()}%` }}>
-            </div>
+            <div className='bg-primary h-2 rounded-full' style={{ width: `${calculateProgress()}%` }}></div>
           </div>
         </div>
       </div>
@@ -50,4 +59,4 @@ function budgetItem({ budget }) {
   )
 }
 
-export default budgetItem
+export default BudgetItem;
