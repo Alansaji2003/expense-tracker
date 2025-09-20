@@ -21,9 +21,15 @@ function Dashlayout({children}) {
   
   const router = useRouter();
   
-  useEffect(() =>{
+  useEffect(() => {
+    // Redirect to sign-in if no user and Clerk is available
+    if (isLoaded && !user && typeof window !== 'undefined') {
+      router.push('/sign-in');
+      return;
+    }
+    
     user && checkUserBudgets();
-  },[user])
+  }, [user, isLoaded, router])
 
   const checkUserBudgets = async () =>{ 
     try {
