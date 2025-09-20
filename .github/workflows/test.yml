@@ -35,7 +35,7 @@ jobs:
         ADMIN_EMAILS: admin@test.com
 
     - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage/lcov.info
 
@@ -60,23 +60,31 @@ jobs:
     - name: Build application
       run: npm run build
       env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        EMAIL_USER: ${{ secrets.EMAIL_USER }}
-        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-        ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+        CI: true
+        NODE_ENV: test
+        AI_PROVIDER: mock
+        DATABASE_URL: postgresql://test:test@localhost:5432/test
+        OPENAI_API_KEY: test-openai-key
+        EMAIL_USER: test@test.com
+        EMAIL_PASS: testpass
+        ADMIN_EMAILS: admin@test.com
 
     - name: Run E2E tests
-      run: npm run test:e2e
+      run: npx playwright test e2e/basic.spec.js
       env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        EMAIL_USER: ${{ secrets.EMAIL_USER }}
-        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-        ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+        CI: true
+        NODE_ENV: production
+        AI_PROVIDER: mock
+        DATABASE_URL: postgresql://test:test@localhost:5432/test
+        OPENAI_API_KEY: test-openai-key
+        EMAIL_USER: test@test.com
+        EMAIL_PASS: testpass
+        ADMIN_EMAILS: admin@test.com
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_test
+        CLERK_SECRET_KEY: sk_test_test
 
     - name: Upload Playwright report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-report
