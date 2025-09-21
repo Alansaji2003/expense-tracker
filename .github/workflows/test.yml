@@ -62,7 +62,6 @@ jobs:
       run: npm run build
       env:
         CI: true
-        NODE_ENV: production
         AI_PROVIDER: mock
         DATABASE_URL: postgresql://test:test@localhost:5432/test
         NEXT_PUBLIC_DATABASE_URL: postgresql://test:test@localhost:5432/test
@@ -78,7 +77,6 @@ jobs:
       run: npx playwright test e2e/basic.spec.js
       env:
         CI: true
-        NODE_ENV: production
         AI_PROVIDER: mock
         DATABASE_URL: postgresql://test:test@localhost:5432/test
         NEXT_PUBLIC_DATABASE_URL: postgresql://test:test@localhost:5432/test
