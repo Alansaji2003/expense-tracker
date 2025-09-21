@@ -10,6 +10,9 @@ const nextConfig = {
   experimental: {
     // Enable server components
     serverComponentsExternalPackages: ['@neondatabase/serverless'],
+    // Fix Edge Runtime eval issues
+    esmExternals: 'loose',
+    serverMinification: false,
   },
   
   // Skip static generation for dynamic routes during build
@@ -33,6 +36,17 @@ const nextConfig = {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
   
+  // Webpack configuration to fix Edge Runtime issues
+  webpack: (config, { isServer, nextRuntime }) => {
+    if (nextRuntime === 'edge') {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'pg-native': false,
+      };
+    }
+    return config;
+  },
+
   // Headers for security
   async headers() {
     return [

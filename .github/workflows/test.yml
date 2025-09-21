@@ -72,6 +72,7 @@ jobs:
         ADMIN_EMAILS: admin@test.com
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ZGVjZW50LWJlZS00MS5jbGVyay5hY2NvdW50cy5kZXYk
         CLERK_SECRET_KEY: sk_test_aSc4GO2567X8QgjYQhCTbK2MaPmflcW1sq3FOtfh81
+        NEXT_TELEMETRY_DISABLED: 1
 
     - name: Run E2E tests
       run: npx playwright test e2e/basic.spec.js
