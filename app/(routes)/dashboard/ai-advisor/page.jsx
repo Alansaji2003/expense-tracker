@@ -310,7 +310,7 @@ Feel free to ask me anything about your finances!`,
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto min-h-screen">
       <div className="mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Bot className="h-8 w-8 text-blue-600" />
@@ -321,7 +321,7 @@ Feel free to ask me anything about your finances!`,
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 min-h-[calc(100vh-200px)]">
         {/* Financial Summary Cards */}
         <div className="lg:col-span-1 space-y-4">
           {insights && (
@@ -404,8 +404,8 @@ Feel free to ask me anything about your finances!`,
         </div>
 
         {/* Chat Interface */}
-        <div className="lg:col-span-2">
-          <Card className="h-[600px] flex flex-col">
+        <div className="lg:col-span-2 flex flex-col">
+          <Card className="flex-1 flex flex-col min-h-[600px]">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -430,9 +430,9 @@ Feel free to ask me anything about your finances!`,
               </div>
             </CardHeader>
             
-            <CardContent className="flex-1 flex flex-col">
+            <CardContent className="flex-1 flex flex-col p-6">
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 min-h-0">
+              <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 min-h-[400px]" style={{ maxHeight: 'calc(100vh - 300px)' }}>
                 {messages.length === 0 && !loading && (
                   <div className="flex items-center justify-center h-full text-gray-500">
                     <div className="text-center">
@@ -448,7 +448,7 @@ Feel free to ask me anything about your finances!`,
                     key={message.id}
                     className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}
                   >
-                    <div className={`flex gap-2 max-w-[85%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className={`flex gap-2 ${message.type === 'user' ? 'max-w-[85%] flex-row-reverse' : 'max-w-[95%] flex-row'}`}>
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         message.type === 'user' ? 'bg-blue-600' : 'bg-gray-600'
                       }`}>
@@ -458,12 +458,14 @@ Feel free to ask me anything about your finances!`,
                           <Bot className="h-4 w-4 text-white" />
                         )}
                       </div>
-                      <div className={`p-3 rounded-lg shadow-sm ${
+                      <div className={`p-4 rounded-lg shadow-sm ${
                         message.type === 'user' 
                           ? 'bg-blue-600 text-white rounded-br-sm' 
                           : 'bg-gray-100 text-gray-900 rounded-bl-sm border'
                       }`}>
-                        <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                        <div className={`whitespace-pre-wrap leading-relaxed break-words ${
+                          message.type === 'user' ? 'text-sm' : 'text-sm'
+                        }`}>
                           {message.content}
                         </div>
                         <div className={`text-xs mt-2 ${

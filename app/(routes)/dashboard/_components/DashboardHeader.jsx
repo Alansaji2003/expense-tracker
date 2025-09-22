@@ -2,8 +2,9 @@
 import { Button } from '@/components/ui/button';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation';
 import React from 'react';
+import MobileNav from './MobileNav';
 
 function DashboardHeader() {
   const router = useRouter();
@@ -26,7 +27,8 @@ function DashboardHeader() {
 
   return (
     <div className='p-5 shadow-md border-b flex items-center justify-between'>
-      <div>
+      <div className="flex items-center gap-4">
+        <MobileNav />
         {!isDashboard && <Button onClick={gotoDash}>Go to Dashboard</Button>}
       </div>
       <div>

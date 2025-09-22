@@ -66,17 +66,19 @@ function Dashlayout({children}) {
 
   return (
     <>
-    <div className='fixed md:w-64 hidden md:block'>
+      {/* Desktop Sidebar */}
+      <div className='fixed md:w-64 hidden md:block z-30'>
         <SideNav/>
-    </div>
+      </div>
 
-<div className='md:ml-64'>
-<DashboardHeader/>
-{children}</div>
-
+      {/* Main Content */}
+      <div className='md:ml-64'>
+        <DashboardHeader/>
+        <main className='min-h-screen bg-gray-50'>
+          {children}
+        </main>
+      </div>
     </>
-    
-
   )
 }
 
